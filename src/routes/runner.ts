@@ -21,10 +21,10 @@ const requestTime = function(req: Request, res: Response, next: NextFunction) {
     next()
 };
 
-// runner.use(myLogger);
-// runner.get("/", (req: Request,res: Response) => {
-//     res.send("Hello world")
-// });
+runner.use(myLogger);
+runner.get("/", (req: Request,res: Response) => {
+    res.send("Hello world")
+});
 
 runner.use(requestTime);
 
