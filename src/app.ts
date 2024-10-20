@@ -1,27 +1,44 @@
-import express from "express";
+import express, {Request, Response} from "express";
 // Manejar subida de archivos
 import multer from "multer";
 // Procesar imagenes
 import sharp from "sharp";
 import path from "path";
+import bodyParser from "body-parser";
 
 const app = express();
 const port = 3000;
 
-// Configuracion de multer para manejar la subida de imagenes
-// Almacena los archivos en la memoria RAM
-const storage = multer.memoryStorage();
+// Configuración de multer para subir archivos
+const upload = multer({
+    storage: multer.diskStorage({
+        destination: "./uploads",
+        filename: (req, file, cb) => {
+            cb(null, file.originalname);
+        },
+    }),
+});
 
-// Creando un middleware de Multer
-const upload = multer({ storage });
+// Usar body-parser para parsear el cuerpo de la solicitud
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
-app.post("/upload", upload.single("image"), async (req, res) => {
+// Ruta para subir un archivo
+app.post("/upload", upload.single("file"), async (req: express.Request, res: express.Response): Promise<void> => {
     if (!req.file) {
-        return res.status(400).send("No file uploaded.");
+        res.status(400).send("No file uploaded.");
+        return;
     }
 
-
     const { width, height } = req.body;
+
+    const parsedWidth = parseInt(String(width));
+    const parsedHeight = parseInt(String(height));
+
+    if (isNaN(parsedWidth) || isNaN(parsedHeight)) {
+        res.status(400).send("Width and height must be valid numbers.");
+        return;
+    }
 
     try {
         const resizedImage = await sharp(req.file.buffer)
@@ -34,7 +51,7 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     }
 });
 
-app.get("/", (req, res) => {
+app.get("/", (req:express.Request, res: express.Response) => {
     res.send("Hello world!");
 })
 
@@ -42,13 +59,3 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
     console.log(`API escuchando en http://localhost:${port}`);
 });
-
-
-// API anterior
-// app.get("/", (req, res) => {
-//     res.send("Hello world!");
-// })
-
-// app.listen(port, () => {
-//     console.log(`Example app listening on port ${port}`);
-// })

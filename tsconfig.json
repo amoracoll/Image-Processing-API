@@ -5,7 +5,14 @@
       "target": "es6",
       "moduleResolution": "node",
       "sourceMap": true,
-      "outDir": "dist"
+      "outDir": "dist",
+      "strict": true,
+      "typeRoots": [
+        "./node_modules/@types",  // Configuración para extender la interface Express
+        "./src/@types"
+      ]
     },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"],
     "lib": ["es2015"]
   }
