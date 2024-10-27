@@ -3,8 +3,14 @@ import path from "path";
 import sharp from "sharp";
 import fs from "fs";
 
-// Ejemplo ruta
+// Redimensionar una imagen existente
 // http://localhost:3000/resize?width=200&height=300&imageName=fjord.jpg
+
+// Generar una imagen de marcador de posicion
+//http://localhost:3000/placeholder/400x300
+
+// Acceder a una imagen original
+//http://localhost:3000/assets/images/fjord.jpg
 
 const app = express();
 const port = 3000;
