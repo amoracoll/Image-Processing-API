@@ -99,3 +99,5 @@ app.get("/placeholder/:width(\\d+)x:height(\\d+)", async (req: Request, res: Res
 app.listen(port, () => {
     console.log(`Example listening on port ${port}`);
 });
+
+export default app;
