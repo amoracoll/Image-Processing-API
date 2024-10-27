@@ -3,43 +3,45 @@ import path from "path";
 import sharp from "sharp";
 import fs from "fs";
 
+// Ejemplo ruta
+// http://localhost:3000/resize?width=200&height=300&imageName=fjord.jpg
+
 const app = express();
 const port = 3000;
+
+// Directorio de imagenes
+const imagesDir = path.join(__dirname, "../assets");
+const cacheDir = path.join(__dirname, "../cache");
+
+// Assegurar que el directorio de cache exista
+if (!fs.existsSync(cacheDir)) {
+    fs.mkdirSync(cacheDir);
+}
 
 // Servir archivos estáticos de la carpeta "assets/images"
 app.use("/assets", express.static(path.join(__dirname, "../assets")));
 
-// Ejemplo ruta
-// http://localhost:3000/resize?width=200&height=300&imageName=fjord.jpg
+// Funcion para validar parametros
+const validateParams = (width: string, height: string, fileName: string): boolean => {
+    return !isNaN(Number(width)) && !isNaN(Number(height)) && fileName.length > 0;
+};
 
-
-// Variables
-let imageWidth = 500;
-let imageHeight = 500;
-let imageName = "fjord.jpg";
-
-// Opcion 1
-// app.get(`/filename=${imageName}&widht=${imageWidth}&height=${imageHeight}`, (req: Request, res: Response) => {
-//     console.log(path.join(__dirname, "../assets","santamonica.jpg"));
-
-//     res.send(`
-//         <h1>Imagen desde Express</h1>
-//         <center>
-//             <img src="/assets/${imageName}" alt="Mi Imagen" width="${imageWidth}" height="${imageHeight}" />
-//         </center>
-//     `);
-// });
-
-// Opcion 2 con Sharp
+// Ruta para redimensionar la imagen
 app.get("/resize", async (req: Request, res: Response):Promise<any> => {
     const {width: width, height,  imageName: fileName} = req.query;
 
     // Validar que los parametros sean validos
-    if (!width || !height || !fileName) {
-        return res.status(400).send("Faltan parametros. Debe proporcionar fileName, width y height");
+    if (!width || !height || !fileName || !validateParams(width as string, height as string, fileName as string)) {
+        return res.status(400).send("Faltan parámetros o son inválidos. Debe proporcionar imageName, width y height.");
     }
 
-    const imagePath = path.join(__dirname,"../assets",`${fileName}`);
+    const imagePath = path.join(imagesDir, fileName as string);
+    const cahedImagedPath = path.join(cacheDir, `${width}x${height}-${fileName}`);
+
+    // Verificar si la imagen redimensionada ya existe en la cache
+    if (fs.existsSync(cahedImagedPath)) {
+        return res.sendFile(cahedImagedPath);
+    }
 
     // Verificar si el archivo existe
     if (!fs.existsSync(imagePath)) {
@@ -64,6 +66,28 @@ app.get("/resize", async (req: Request, res: Response):Promise<any> => {
         res.status(500).send("Error resizing image");
     }
 });
+
+// Ruta para generar una imagen de marcador de posición
+app.get("/placeholder/:width(\\d+)x:height(\\d+)", async (req: Request, res: Response) => {
+    const { width, height } = req.params;
+  
+    try {
+      const buffer = await sharp({
+        create: {
+          width: parseInt(width),
+          height: parseInt(height),
+          channels: 3,
+          background: { r: 200, g: 200, b: 200 },
+        },
+      })
+        .jpeg()
+        .toBuffer();
+  
+      res.type("image/jpeg").send(buffer);
+    } catch (error) {
+      res.status(500).send("Error al generar la imagen de marcador de posición.");
+    }
+  });
 
 // Start server
 app.listen(port, () => {
