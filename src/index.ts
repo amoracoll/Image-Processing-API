@@ -10,7 +10,7 @@ import fs from "fs";
 //http://localhost:3000/placeholder/400x300
 
 // Acceder a una imagen original
-//http://localhost:3000/assets/images/fjord.jpg
+//http://localhost:3000/assets/fjord.jpg
 
 const app = express();
 const port = 3000;
