@@ -10,7 +10,7 @@ import fs from "fs";
 //http://localhost:3000/placeholder/400x300
 
 // Acceder a una imagen original
-//http://localhost:3000/assets/images/fjord.jpg
+//http://localhost:3000/assets/fjord.jpg
 
 const app = express();
 const port = 3000;
@@ -99,3 +99,5 @@ app.get("/placeholder/:width(\\d+)x:height(\\d+)", async (req: Request, res: Res
 app.listen(port, () => {
     console.log(`Example listening on port ${port}`);
 });
+
+export default app;
