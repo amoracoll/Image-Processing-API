@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "test": "ts-node ./node_modules/jasmine/bin/jasmine.js",
-    "start": "ts-node-dev src/index.ts"
+    "start": "ts-node-dev src/index.ts",
+    "build": "tsc",
+    "prettier": "prettier --write src/**/*.{ts,tsx,js,jsx,json}",
+    "lint": "eslint src/**/*.{ts,tsx,js,jsx} --fix"
   },
   "keywords": [],
   "author": "",
@@ -18,8 +21,14 @@
     "@types/jasmine": "^5.1.4",
     "@types/node": "^22.7.9",
     "@types/supertest": "^6.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
+    "eslint": "^9.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "jasmine": "^5.4.0",
     "jasmine-ts": "^0.4.0",
+    "prettier": "^3.3.3",
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
